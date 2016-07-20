@@ -1,0 +1,39 @@
+version: '2'
+services:
+  elasticsearch:
+    image: elasticsearch:latest
+    command: elasticsearch -Des.network.host=0.0.0.0
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+  logstash:
+    image: logstash
+    command: logstash -f /etc/logstash/conf.d/logstash.conf
+    volumes:
+      - ./logstash:/etc/logstash/conf.d
+    ports:
+      - "5000:5000"
+      - "1514:1514"
+    depends_on:
+      - elasticsearch
+  kibana:
+    image: kibana
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+  app:
+    image: 
+    ports: 
+      - 
+    env_file: ./app/app.env
+    logging:
+      driver: syslog
+      options:
+        syslog-format: "rfc3164"
+        syslog-address: "tcp://localhost:1514"
+    depends_on:
+      - logstash
+    
+    
+
